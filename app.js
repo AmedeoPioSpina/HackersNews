@@ -41,21 +41,18 @@ let newsAry = [];
 let allArticles;
 const allNews = document.querySelector(".allNews");
 
-const getIdNews = async() => {
-  await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty")
-  .then((response) => response.json())
-  .then((data) => {
-    Object.values(data).map(value => {
-      newsAry.push(value);
-      console.log(value);
+const getIdNews = () => {
+  return new Promise((resolve, reject) => {
+    fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty")
+    .then((response) => response.json())
+    .then((data) => {
+      Object.values(data).map(value => {
+        newsAry.push(value);
+        console.log(value);
+      });
+      getNews();
     });
-    getNews();
-  });
+  })
 }
 
-const tasksOrderManager = async() => {
-  await getIdNews();
-  console.log("Finito");
-}
-
-tasksOrderManager();
+getIdNews();
