@@ -30,25 +30,29 @@ const addNews = (news) => {
 };
 
 const getNews = () => {
-  newsAry.forEach(idArt => {
-  fetch("https://hacker-news.firebaseio.com/v0/item/" + idArt + ".json?print=pretty")
-  .then((response) => response.json())
-  .then((data) => {addNews(data)});
+  newsAry.forEach(async(idArt) => {
+    let res = await fetch("https://hacker-news.firebaseio.com/v0/item/" + idArt + ".json?print=pretty");
+    if(!res.ok){
+      const message = "getNews() error: " + res.status;
+      throw new Error(message);
+    }
+    let NewsJSON = await res.json();
+    addNews(NewsJSON);
   });
-};
+}
 
 let newsAry = [];
 let allArticles;
 const allNews = document.querySelector(".allNews");
 
 const getIdNews = async() => {
-    const resp = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
-    if(!resp.ok){
-      const message = resp.status;
+    const response = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
+    if(!response.ok){
+      const message ="getIdNews() error: " +  response.status;
       throw new Error(message);
     }
-    const dataJSON = await resp.json();
-      Object.values(dataJSON).map(value => {
+    const idsNewsJSON = await response.json();
+      Object.values(idsNewsJSON).map(value => {
         newsAry.push(value);
         console.log(value);
       });
