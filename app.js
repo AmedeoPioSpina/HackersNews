@@ -29,36 +29,29 @@ const addNews = (news) => {
   allNews.appendChild(divNews);
 };
 
-const getNews = () => {
-  newsAry.forEach(async(idArt) => {
-    let res = await fetch("https://hacker-news.firebaseio.com/v0/item/" + idArt + ".json?print=pretty");
-    if(!res.ok){
-      const message = "getNews() error: " + res.status;
-      throw new Error(message);
-    }
-    let NewsJSON = await res.json();
-    addNews(NewsJSON);
+const getNews = (idsAry) => {
+  idsAry.map(async(idArt) => {
+    await fetch("https://hacker-news.firebaseio.com/v0/item/" + idArt + ".json?print=pretty")
+    .then((res) => res.json())
+    .then((data) => {addNews(data); console.log(data)})
+    .catch((err) => console.log(err))
   });
 }
 
-let newsAry = [];
-let allArticles;
-const allNews = document.querySelector(".allNews");
-
 const getIdNews = async() => {
-    const response = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
-    if(!response.ok){
-      const message ="getIdNews() error: " +  response.status;
-      throw new Error(message);
-    }
-    const idsNewsJSON = await response.json();
-      Object.values(idsNewsJSON).map(value => {
-        newsAry.push(value);
-        console.log(value);
-      });
-      getNews();
+  await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty")
+  .then((res) => res.json())
+  .then((data) => {Object.values(data).map((id) => idsNewsAry.push(id)); console.log(idsNewsAry)})
+  .catch((err) => console.log(err))
 }
 
-getIdNews().catch(e => {
-  console.log(e);
-});
+let idsNewsAry = [];
+const allNews = document.querySelector(".allNews");
+
+
+const initNews = async() => {
+  await getIdNews();
+  await getNews(idsNewsAry);
+}
+
+initNews();
