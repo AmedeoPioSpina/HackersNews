@@ -6,10 +6,9 @@ const UnixConverter = (UnixTime) => {
 };
 
 const addNews = (news) => {
-  console.log(news);
-  Object.values(news).map(trg => {
+  console.log(news)
+  news.map(trg => {
     console.log(trg)
-    console.log("ciao");
     const divNews = document.createElement("div");
     divNews.className = "news";
     const h3 = document.createElement("h3")
@@ -28,29 +27,31 @@ const addNews = (news) => {
     divNews.appendChild(divNewsBy);
     const divNewsRelease = document.createElement("div");
     divNewsRelease.className = "divNewsRelease";
-    divNewsRelease.textContent = UnixConverter(news.time);
+    divNewsRelease.textContent = UnixConverter(trg.time);
+    console.log(trg.time);
     divNews.appendChild(divNewsRelease);
     const allNews = document.querySelector(".allNews");
     allNews.appendChild(divNews);
   });
 };
 
-const getNews = (idsAry) => {
-  const newsAry = []
+const getNews = async(idsAry) => {
+  const newsAry = [];
+  await Promise.all(
   Object.values(idsAry).map( async (id) => {
     await fetch("https://hacker-news.firebaseio.com/v0/item/" + id + ".json?print=pretty")
     .then((res) => res.json())
     .then((data) => {newsAry.push(data);})
     .catch((err) => console.log(err))
-  });
+  })
+  )
   return newsAry;
 }
 
 const fetchIdNews = async() => {
-  let ids;
-  await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty")
+  const ids = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty")
   .then((res) => res.json())
-  .then((data) => {ids = data;})
+  .then((data) => data.splice(0, 10))
   .catch((err) => console.log(err));
   return ids;
 }
